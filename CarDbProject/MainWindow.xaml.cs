@@ -30,9 +30,18 @@ namespace CarDbProject
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            var car =  GetCar(1);
-            var cars = GetCars();
-            cars.Add(car);
+            // var car =  GetCar(1);
+            //car.Model = "XC70";
+            //car.Id = 123;
+            //SaveCar(car);
+            var car = new Car
+            {
+                Make = "BMW",
+                Model = "X6"
+            };
+            // AddCar(car);
+            DeleteCar(1);
+            //var cars = GetCars();
         }
     }
 }

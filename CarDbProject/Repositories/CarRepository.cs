@@ -10,10 +10,28 @@ namespace CarDbProject.Repositories
     public static class CarRepository
     {
         private static string connectionString = ConfigurationManager.ConnectionStrings["dbLocal"].ConnectionString;
-        
-        
+
+
         // CRUD
-        
+        #region CREATE
+        public static int AddCar(Car car)
+        {
+            string stmt = "INSERT INTO car(make, model) values(@make,@model) returning id";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            {
+                using (var command = new NpgsqlCommand(stmt, conn))
+                {
+                    conn.Open();
+                    command.Parameters.AddWithValue("make", car.Make);
+                    command.Parameters.AddWithValue("model", car.Model);
+                    int id = (int)command.ExecuteScalar();
+                    car.Id = id;
+                    return id;
+                }
+            }
+        }
+        #endregion
         #region READ
         public static Car GetCar(int id)
         {
@@ -75,7 +93,42 @@ namespace CarDbProject.Repositories
 
         #endregion
         #region UPDATE
+        public static void SaveCar(Car car)
+        {
+            string stmt = "UPDATE car set model = @model, make=@make where id=@id";
 
+            using (var conn = new NpgsqlConnection(connectionString))
+            {
+                using (var command = new NpgsqlCommand(stmt, conn))
+                {
+                    conn.Open();
+                    command.Parameters.AddWithValue("make", car.Make);
+                    command.Parameters.AddWithValue("model", car.Model);
+                    command.Parameters.AddWithValue("id", car.Id);
+                    command.ExecuteScalar();
+                }
+            }
+        }
+        #endregion
+        #region DELETE
+        public static void DeleteCar(int id)
+        {
+            string stmt = "DELETE FROM car WHERE id = @id";
+            using (var conn = new NpgsqlConnection(connectionString))
+            {
+                using (var command = new NpgsqlCommand(stmt, conn))
+                {
+                    conn.Open();
+                    command.Parameters.AddWithValue("id", id);
+                    command.ExecuteScalar();
+                }
+            }
+        }
+
+        public static void Delete(object poco)
+        {
+
+        }
         #endregion
     }
 }
