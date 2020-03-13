@@ -48,7 +48,7 @@ namespace CarDbProject.Repositories
                             foreach (var car in cars)
                             {
                                 command.Parameters.AddWithValue("make", car.Make);
-                                command.Parameters.AddWithValue("model", car.Model);
+                                command.Parameters.AddWithValue("model", car.Model ?? Convert.DBNull);
                                 command.Connection = conn;
                                 command.CommandText = stmt;
                                 command.Prepare();
@@ -68,9 +68,17 @@ namespace CarDbProject.Repositories
         }
         #endregion
         #region READ
-        public static Car GetCar(int id)
+        
+        public static void GetCar(bool withOwners = false)
         {
+
+        }
+        public static Car GetCarWithOwners(int id)
+        {
+            //EF entity framework
+
             string stmt = "select id, make,model from car where id=@id";
+            stmt = "SELECT c.id as \"car.id\", c.model,c.make, p.id as \"person.id\", p.firstname, p.lastname FROM car c INNER JOIN person p on p.car_id = c.id  WHERE c.id = @id";
 
             using (var conn = new NpgsqlConnection(connectionString))
             {
@@ -86,10 +94,15 @@ namespace CarDbProject.Repositories
                         {
                             car = new Car
                             {
-                                Id = (int)reader["id"],
+                                Id = (int)reader["car.id"],
                                 Make = (string)reader["make"],
                                 Model = (string)reader["model"],
                             };
+                            car.Owners.Add(new Person
+                            {
+                                Id=(int)reader["person.id"],
+                                Firstname = (string)reader["firstname"]
+                            });
                         }
                     }
                 }

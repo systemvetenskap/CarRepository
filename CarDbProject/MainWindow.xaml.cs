@@ -1,5 +1,6 @@
 ﻿using CarDbProject.Models;
 using CarDbProject.Repositories;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,28 +54,31 @@ namespace CarDbProject
                 },
                 new Car
                 {
-                    Make="Audi med ett långt namn",
-                    Model="Q12"
+                    Make="Audi med långt namn"
                 }
             };
             try
             {
-               AddCars(cars);
+               //AddCars(cars);
 
             }
-            catch (Exception ex)
+            catch (PostgresException ex)
             {
+                var code = ex.SqlState;
+                
                 MessageBox.Show(ex.Message);
             }
-            // var car =  GetCar(1);
+             var car =  GetCarWithOwners(3);
             //car.Model = "XC70";
             //car.Id = 123;
             //SaveCar(car);
-            var car = new Car
+            car = new Car
             {
                 Make = "BMW",
                 Model = "X7"
             };
+
+           
             // AddCar(car);
            // DeleteCar(1);
             //var cars = GetCars();
