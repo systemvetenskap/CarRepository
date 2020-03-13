@@ -28,8 +28,44 @@ namespace CarDbProject
             InitializeComponent();
         }
 
+        /* Agenda
+         * 
+         * 1. Lägga till transaktioner
+         * 2. Hantera "ajdå, det här gick inte bra"
+         * 3. Eventuellt: "Smart, kan man koppla ihop C# objekt sådär"
+         * 4. Ännu mer eventuellt: "ok, kan man trimma frågorna!"
+         * 
+         */
+
         private void button_Click(object sender, RoutedEventArgs e)
         {
+            var cars = new List<Car>
+            {
+                new Car
+                {
+                    Make="Audi",
+                    Model="Q10"
+                },
+                new Car
+                {
+                    Make="Audi",
+                    Model="Q11"
+                },
+                new Car
+                {
+                    Make="Audi med ett långt namn",
+                    Model="Q12"
+                }
+            };
+            try
+            {
+               AddCars(cars);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
             // var car =  GetCar(1);
             //car.Model = "XC70";
             //car.Id = 123;
@@ -37,10 +73,10 @@ namespace CarDbProject
             var car = new Car
             {
                 Make = "BMW",
-                Model = "X6"
+                Model = "X7"
             };
             // AddCar(car);
-            DeleteCar(1);
+           // DeleteCar(1);
             //var cars = GetCars();
         }
     }

@@ -31,6 +31,41 @@ namespace CarDbProject.Repositories
                 }
             }
         }
+
+        public static void AddCars(List<Car> cars)
+        {
+            string stmt = "INSERT INTO car(make, model) values(@make,@model) returning id";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                using (var trans = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        using (var command = new NpgsqlCommand())
+                        {
+                            foreach (var car in cars)
+                            {
+                                command.Parameters.AddWithValue("make", car.Make);
+                                command.Parameters.AddWithValue("model", car.Model);
+                                command.Connection = conn;
+                                command.CommandText = stmt;
+                                command.Prepare();
+                                int result = (int)command.ExecuteScalar();
+                                command.Parameters.Clear();
+                            }
+                        }
+                        trans.Commit();
+                    }
+                    catch (PostgresException)
+                    {
+                        trans.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
         #endregion
         #region READ
         public static Car GetCar(int id)
@@ -93,7 +128,7 @@ namespace CarDbProject.Repositories
 
         #endregion
         #region UPDATE
-        public static void SaveCar(Car car)
+        public static int SaveCar(Car car)
         {
             string stmt = "UPDATE car set model = @model, make=@make where id=@id";
 
@@ -105,7 +140,7 @@ namespace CarDbProject.Repositories
                     command.Parameters.AddWithValue("make", car.Make);
                     command.Parameters.AddWithValue("model", car.Model);
                     command.Parameters.AddWithValue("id", car.Id);
-                    command.ExecuteScalar();
+                    return command.ExecuteNonQuery();
                 }
             }
         }
